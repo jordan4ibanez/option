@@ -3,7 +3,7 @@
 
 ```D
 void main() {
-        import std.conv;
+    import std.conv;
     import std.stdio;
 
     Option!int result;
