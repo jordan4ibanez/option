@@ -35,9 +35,8 @@ public:
         return this;
     }
 
-    // I dunno how to automate this so, here you go.
-    void match(void function(int data) @safe someMatch,
-        void function() @safe noneMatch) {
+    void match(void delegate(T data) @safe someMatch,
+        void delegate() @safe noneMatch) {
         final switch (isSome) {
         case true: {
                 someMatch(data);
@@ -49,11 +48,43 @@ public:
         }
     }
 
+    T unwrap() {
+        if (!isSome) {
+            throw new Error("Unwrapped none.");
+        }
+
+        return data;
+    }
+
+    T expect(string customMessage) {
+        if (!isSome) {
+            throw new Error(customMessage);
+        }
+
+        return data;
+    }
+
+    T unwrapOr(T defaultValue) {
+        if (!isSome) {
+            return defaultValue;
+        }
+
+        return data;
+    }
+
+    T unwrapOrElse(T delegate() @safe alternativeToRun) {
+        if (!isSome) {
+            return alternativeToRun();
+        }
+
+        return data;
+    }
+
 }
 
 struct Some(T) {
-    Option!T some;
-    alias some this;
+    Option!T option;
+    alias option this;
 
     this(T newData) {
         this.data = newData;
@@ -65,8 +96,8 @@ struct None {
 
 unittest {
 
-    import std.stdio;
     import std.conv;
+    import std.stdio;
 
     Option!int result;
 
@@ -75,21 +106,40 @@ unittest {
     }
 
     result.match(
-        (int data) { 
-            writeln("noice " ~ to!string(result.unwrap())); 
-            
-
-            },
+        (int data) { writeln("noice " ~ to!string(result.unwrap())); },
         () => throw new Error("uh oh")
     );
 
     result = None();
 
     result.match(
-        (int data) => writeln("hi"),
+        (int data) => throw new Error("this should be none ahhh"),
         () => writeln("bye")
     );
 
-    
+    int testing = result.unwrapOrElse(
+        () => 10);
+
+    writeln(testing);
+
+    Option!string ohNo() {
+        import std.random;
+
+        Option!string myCoolResult;
+
+        auto rnd = Random(unpredictableSeed());
+        if (uniform(0.0, 1.0, rnd) > 0.5) {
+            myCoolResult = Some!string("I am a cool string. 8)");
+        } else {
+            myCoolResult = None();
+        }
+
+        return myCoolResult;
+    }
+
+    writeln(ohNo().unwrapOrElse(() {
+            writeln("You blew it up ahhh.");
+            return "I am a default string.";
+        }));
 
 }
