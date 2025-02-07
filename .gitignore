@@ -14,4 +14,3 @@ option-test-*
 *.o
 *.obj
 *.lst
-option_d-test-library

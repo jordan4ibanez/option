@@ -15,15 +15,14 @@ public:
     this(T newData) {
         enforce((is(typeof(newData) == Option!T)), "Do not instantiate Option with Option. Use Some or None.");
 
-        static if (is(typeof(newData) == Some!T)) {
+        static if (is(typeof(newData) == None)) {
+            isSome = false;
+        } else static if (is(typeof(newData) == Some!T)) {
             isSome = true;
             data = newData.data;
         }
 
         this.data = newData;
-    }
-
-    this(None!T none) {
     }
 
     auto opAssign(T)(T value) {
@@ -92,9 +91,7 @@ struct Some(T) {
     }
 }
 
-struct None(T) {
-    Option!T option;
-    alias option this;
+struct None {
 }
 
 unittest {
