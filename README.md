@@ -1,5 +1,5 @@
-# option
- Option type for D
+# option_D
+ Option type for D.
 
 ```D
 void main() {
